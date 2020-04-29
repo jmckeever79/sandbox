@@ -1,7 +1,10 @@
-C:\Users\jj\git\Sandbox\obj\Debug\Sandbox.csprojAssemblyReference.cache
 C:\Users\jj\git\Sandbox\obj\Debug\Sandbox.csproj.CoreCompileInputs.cache
 C:\Users\jj\git\Sandbox\bin\Debug\Sandbox.exe.config
 C:\Users\jj\git\Sandbox\bin\Debug\Sandbox.exe
 C:\Users\jj\git\Sandbox\bin\Debug\Sandbox.pdb
 C:\Users\jj\git\Sandbox\obj\Debug\Sandbox.exe
 C:\Users\jj\git\Sandbox\obj\Debug\Sandbox.pdb
+C:\Users\jj\git\Sandbox\bin\Debug\Coding.dll
+C:\Users\jj\git\Sandbox\bin\Debug\Coding.pdb
+C:\Users\jj\git\Sandbox\obj\Debug\Sandbox.csprojAssemblyReference.cache
+C:\Users\jj\git\Sandbox\obj\Debug\Sandbox.csproj.CopyComplete

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 
 namespace Sandbox {
     public sealed class Index : IEquatable<Index> {
@@ -20,7 +20,7 @@ namespace Sandbox {
         }
 
         public bool Equals(Index ix) {
-            return ix != null && Row == ix.Row && Column != ix.Column;
+            return ix != null && row == ix.Row && column == ix.Column;
         }
 
         public override int GetHashCode() {
@@ -28,7 +28,7 @@ namespace Sandbox {
         }
 
         public override string ToString() {
-            return string.Format("[{0},{1]]", Row, Column);
+            return string.Format("[{0},{1}]", Row, Column);
         }
 
         public int Row => row;
@@ -47,6 +47,11 @@ namespace Sandbox {
 
         public Index Ix => ix;
 
+        public Tuple<int,int> ComputeGridIndex() {
+            return ((int)Math.Truncate(Ix.Row / 3.0)).
+                TupleWith((int)Math.Truncate(Ix.Column / 3.0));
+        }
+
         public override bool Equals(object obj) {
             return Ix.Equals(obj);
         }
@@ -55,20 +60,23 @@ namespace Sandbox {
             return ix.GetHashCode();
         }
 
+        public override string ToString() {
+            return string.Format("<{0}: value={1}>", Ix, Value);
+        }
+
         public int? Value { get; set; }
 
         public bool IsValid { get; set; }
     }
 
     public sealed class Grid {
-        private static IEnumerable<int> targetSet = Enumerable.Range(1, 9);
-        private static readonly int targetSum;
-
-        static Grid() {
-            targetSum = targetSet.Sum();
-        }
-
         private readonly Dictionary<Index,Cell> matrix = new Dictionary<Index, Cell>();
+
+        private readonly Index ix;
+
+        public Grid(Index ix) {
+            this.ix = ix;
+        }
 
         public void AddCell(Cell c) {
             matrix[c.Ix] = c;
@@ -92,7 +100,7 @@ namespace Sandbox {
         }
 
         public override string ToString() {
-            return base.ToString();
+            return string.Format($"<ix>");
         }
 
         public override bool Equals(object obj) {
@@ -105,12 +113,37 @@ namespace Sandbox {
 
         public bool IsValid { get; set; }
 
-
+        public Index Ix => ix;
     }
 
     public class SudokuMatrixModel {
         private const int CellCount = 9;
         private const int GridCount = 3;
+
+        public static SudokuMatrixModel GenerateRandomBoard() {
+            var model = new SudokuMatrixModel();
+            // add thirty values
+            var count = 0;
+            var r = new Random();
+            var usedSquares = new HashSet<Index>();
+            while (true) {
+                if (count == 30) break;
+                // the max value for Next is EXCLUSIVE
+                var nextX = r.Next(0, CellCount);
+                var nextY = r.Next(0, CellCount);
+                var nextIx = new Index(nextX, nextY);
+                if (usedSquares.Contains(nextIx)) {
+                    continue;
+                }
+                var nextVal = r.Next(1, CellCount + 1);
+                var c = model.GetCell(nextX, nextY);
+                model.UpdateValue(c, nextVal);
+                count++;
+                usedSquares.Add(nextIx);
+                Console.WriteLine($"Set {nextIx} to {nextVal}");
+            }
+            return model;
+        }
 
         private readonly Cell[,] matrix = new Cell[CellCount, CellCount];
         private readonly Grid[,] grids = new Grid[GridCount, GridCount];
@@ -121,13 +154,27 @@ namespace Sandbox {
                     var ix = new Index(i, j);
                     var c = new Cell(ix);
                     matrix[i, j] = c;
-                    var gridX = Math.Round(i / 3.0, 0).ToInt();
-                    var gridY = Math.Round(j / 3.0, 0).ToInt();
-                    var i1 = i % 3;
-                    var j1 = j % 3;
-                    grids[gridX, gridY].AddCell(c);
+                    var gridIx = c.ComputeGridIndex();
+                    var g = grids[gridIx.Item1, gridIx.Item2];
+                    if (g == null) {
+                        grids[gridIx.Item1, gridIx.Item1] = g = new Grid(new Index(gridIx.Item1, gridIx.Item2));
+                    }
+                    g.AddCell(c);
                 }
             }
+        }
+
+        public override string ToString() {
+            var sb = new StringBuilder();
+            for (int i = 0; i < CellCount; i++) {
+                sb.Append("|");
+                for (int j = 0; j < CellCount; j++) {
+                    var c = GetCell(i, j);
+                    sb.AppendFormat(" {0} |", c.Value == null ? " " : c.Value.ToString());
+                }
+                sb.Append("\n");
+            }
+            return sb.ToString();
         }
 
         public Cell GetCell(int row, int col) {
@@ -146,19 +193,11 @@ namespace Sandbox {
         }
 
         public bool CheckCompleteness() {
-            var missingValues = grids.Keys.Where(x => x.Value == null).ToArray();
+            var missingValues = grids.Cast<Cell>().Where(x => x.Value == null).ToArray();
             return missingValues.Length == 0;
         }
 
         public bool ValidateEdit(Cell editedCell) {
-            Grid g;
-            if (!grids.TryLookup(editedCell, out g)) {
-                throw new Exception("Grid for cell {0} not present in grid collection - Matrix initialization was improperly completed");
-            }
-            if (editedCell.Value == null) {
-                editedCell.IsValid = false;
-                return false;
-            }
             return ValidateColumn(editedCell) && ValidateRow(editedCell) && ValidateGrid(editedCell);
         }
 
@@ -195,19 +234,28 @@ namespace Sandbox {
         }
 
         private bool ValidateGrid(Cell editedCell) {
-            var g = grids[editedCell];
+            var loc = editedCell.ComputeGridIndex();
+            var g = grids[loc.Item1, loc.Item2];
             return g.Validate();
         }
 
         private bool ValidateGrids() {
-            var uniqueGrids = grids.Select(x => x.Value).Distinct();
             var valid = true;
-            foreach (var item in uniqueGrids) {
+            foreach (var item in grids) {
                 if (!item.Validate()) {
                     valid = false;
                 }
+
             }
             return valid;
+        }
+
+        public IEnumerable<Cell> GetInvalidCells() {
+            return matrix.Cast<Cell>().Select(x => x).Where(x => !x.IsValid);
+        }
+
+        public IEnumerable<Grid> GetInvalidGrids() {
+            return grids.Cast<Grid>().Select(x => x).Where(x => !x.IsValid);
         }
     }
 
@@ -260,6 +308,10 @@ namespace Sandbox {
 
         public static int ToInt(this double d) {
             return (int)d;
+        }
+
+        public static Tuple<T,T> TupleWith<T>(this T first, T second) {
+            return Tuple.Create(first, second);
         }
     }
 }
