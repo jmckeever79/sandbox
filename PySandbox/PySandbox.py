@@ -1,15 +1,11 @@
 def run(nums):
     result={}
-    single='goober'
     for i in nums:
         if i in result:
-            pass
+            del result[i]
         else:
             result[i]='goober'
-            single=i
-    if single=='goober':
-        raise ValueError('single is goober')
-    return single
+    return result.pop()
 
 print(run([25,14,7,1,22,25,22,7,1]))
 
