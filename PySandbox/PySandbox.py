@@ -1,5 +1,6 @@
 import math
 import numpy as np
+from leetcode import movezeroes
 
 def run(nums):
     result={}
@@ -104,7 +105,6 @@ def max_subarray_sum(vector, startix, endix):
 #print(run([25,14,7,1,22,25,22,7,1]))
 #print(happy_number(19))
 
-v = [-2, -1, 3, -2, -1, 4]
-m = max_subarray_sum(v, 0, len(v))
-print(m)
+nums = [0,0,0,0,0]
+print(movezeroes(nums))
 
