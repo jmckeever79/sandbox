@@ -1,3 +1,5 @@
+import math
+
 def movezeroes(nums):
     l = len(nums)
     i = 0
@@ -24,3 +26,4 @@ def movezeroes(nums):
         zct -= 1
 
     return nums
+
