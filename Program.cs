@@ -9,13 +9,17 @@ namespace Sandbox {
             var ed = new DateTime(2012, 12, 31);
             FinancialDataGenerator.AsCsv(path, "IBM", 300, 30000000, sd, ed);*/
 
-            var results = LeetcodeSandbox.GroupAnagrams(new string[] { "eat", "tea", "tan", "ate", "nat", "bat" });
+            /*var results = LeetcodeSandbox.GroupAnagrams(new string[] { "eat", "tea", "tan", "ate", "nat", "bat" });
             foreach (var sList in results) {
                 foreach (var item in sList) {
                     Console.Write($"{item} ");
                 }
                 Console.WriteLine();
-            }
+            }*/
+
+            var max = LeetcodeSandbox.ComputeMaxSubarraySum(new[] { -2, 1, -3, 4, -1, 2, 1, -5, 4 });
+            Console.WriteLine($"Max subarray sum is {max}.");
+
             Console.WriteLine("Press any key to exit ...");
             Console.ReadKey();
         }

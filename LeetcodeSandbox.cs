@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Coding;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Sandbox {
@@ -42,6 +43,44 @@ namespace Sandbox {
                 result.Add(item.Value);
             }
             return result;
+        }
+
+        private static int ComputeMaxCrossingSum(int[] nums, int startIndex, int endIndex, int mid) {
+            var sum = 0;
+            var leftSum = int.MinValue;
+            for (int i = mid;  i >= startIndex; i--) {
+                sum += nums[i];
+                if (sum > leftSum) {
+                    leftSum = sum;
+                }
+            }
+
+            sum = 0;
+            var rightSum = int.MinValue;
+            for (int i = mid+1;  i<=endIndex; i++) {
+                sum += nums[i];
+                if (sum > rightSum) {
+                    rightSum = sum;
+                }
+            }
+
+            return MathUtils.Max(new[] { leftSum, rightSum, leftSum + rightSum });
+        }
+
+        private static int ComputeMaxSubarraySumHelper(int[] nums, int startIndex, int endIndex) {
+            if (startIndex==endIndex) {
+                return nums[startIndex];
+            }
+
+            int mid = (startIndex + endIndex) / 2;
+
+            return MathUtils.Max(new[] { ComputeMaxSubarraySumHelper(nums, startIndex, mid),
+                ComputeMaxSubarraySumHelper(nums, mid+1, endIndex),
+                ComputeMaxCrossingSum(nums, startIndex, endIndex, mid)});
+        }
+
+        public static int ComputeMaxSubarraySum(int[] nums) {
+            return ComputeMaxSubarraySumHelper(nums, 0, nums.Length - 1);
         }
     }
 }
