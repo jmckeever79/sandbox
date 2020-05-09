@@ -1,6 +1,6 @@
 import math
 import numpy as np
-from leetcode import movezeroes, run_mod
+from leetcode import movezeroes, run_mod, StringModule
 
 def run(nums):
     result={}
@@ -41,4 +41,6 @@ def extract_digits(num):
 #print(run([25,14,7,1,22,25,22,7,1]))
 #print(happy_number(19))
 
-run_mod()
+if __name__ == "__main__":
+    sm = StringModule()
+    print(sm.equiv_strings('m########garz#bij##o', 'garbo'))

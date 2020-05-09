@@ -55,3 +55,23 @@ def movezeroes(nums):
 
     return nums
 
+
+class StringModule(object):
+    def semantic_string(self, s):
+        j = 0
+        while s[j] == '#':
+            j += 1
+        s_equiv = []
+        for i in range(j, len(s)):
+            c = s[i]
+            if c == '#':
+                if s_equiv:
+                    s_equiv.pop()
+            else:
+                s_equiv.append(c)
+        return s_equiv
+
+    def equiv_strings(self, s, t):
+        s_equiv = self.semantic_string(s)
+        t_equiv = self.semantic_string(t)
+        return s_equiv == t_equiv
