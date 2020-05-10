@@ -1,6 +1,7 @@
 import math
 import numpy as np
 from leetcode import movezeroes, run_mod, StringModule
+from arborator import Arborator, TreeNode
 
 def run(nums):
     result={}
@@ -42,5 +43,22 @@ def extract_digits(num):
 #print(happy_number(19))
 
 if __name__ == "__main__":
-    sm = StringModule()
-    print(sm.equiv_strings('m########garz#bij##o', 'garbo'))
+    a = Arborator()
+
+    r0 = TreeNode(0, TreeNode(1), TreeNode(2))
+    r0.left.left = TreeNode(3)
+    r0.left.right = TreeNode(4)
+
+    r0.left.left.left = TreeNode(5)
+    r0.left.left.right = TreeNode(6)
+
+    r0.left.right.left = TreeNode(7)
+    r0.left.right.right = TreeNode(8)
+
+    r0.left.left.left.left = TreeNode(9)
+    r0.left.left.left.right = TreeNode(10)
+
+    r0.left.right.right.left = TreeNode(11)
+    r0.left.right.right.right = TreeNode(12)
+
+    print(a.diameterOfBinaryTree(r0))

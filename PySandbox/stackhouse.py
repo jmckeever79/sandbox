@@ -1,6 +1,6 @@
 import numpy as np
 
-class stackhouse(object):
+class Stackhouse(object):
     """alternative implementation of a stack-like object"""
     
     def __init__(self):
